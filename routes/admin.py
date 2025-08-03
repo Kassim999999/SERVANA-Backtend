@@ -21,3 +21,30 @@ def create_worker():
     db.session.add(new_worker)
     db.session.commit()
     return jsonify(new_worker.to_dict()), 201
+
+
+@admin_routes.route('/workers/<int:worker_id>', methods=['DELETE'])
+def delete_worker(worker_id):
+    worker = Worker.query.get(worker_id)
+    if not worker:
+        return jsonify({"error": "Worker not found"}), 404
+
+    db.session.delete(worker)
+    db.session.commit()
+    return jsonify({"message": "Worker deleted"}), 200
+
+
+@admin_routes.route('/workers/<int:worker_id>', methods=['PUT'])
+def update_worker(worker_id):
+    worker = Worker.query.get(worker_id)
+    if not worker:
+        return jsonify({"error": "Worker not found"}), 404
+
+    data = request.json
+    worker.name = data.get('name', worker.name)
+    worker.email = data.get('email', worker.email)
+    worker.service = data.get('service', worker.service)
+    worker.status = data.get('status', worker.status)
+
+    db.session.commit()
+    return jsonify(worker.to_dict()), 200
