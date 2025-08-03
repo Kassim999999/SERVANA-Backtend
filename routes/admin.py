@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from models import Worker
 from extensions import db
+from models import Service
 
 admin_routes = Blueprint('admin', __name__, url_prefix='/api')
 
@@ -48,3 +49,47 @@ def update_worker(worker_id):
 
     db.session.commit()
     return jsonify(worker.to_dict()), 200
+
+
+@admin_routes.route('/services', methods=['GET'])
+def get_services():
+    services = Service.query.all()
+    return jsonify([s.to_dict() for s in services])
+
+@admin_routes.route('/services', methods=['POST'])
+def create_service():
+    data = request.json
+    service = Service(
+        name=data.get('name'),
+        category=data.get('category'),
+        price=data.get('price'),
+        status=data.get('status', 'Active')
+    )
+    db.session.add(service)
+    db.session.commit()
+    return jsonify(service.to_dict()), 201
+
+@admin_routes.route('/services/<int:service_id>', methods=['PUT'])
+def update_service(service_id):
+    service = Service.query.get(service_id)
+    if not service:
+        return jsonify({"error": "Service not found"}), 404
+
+    data = request.json
+    service.name = data.get('name', service.name)
+    service.category = data.get('category', service.category)
+    service.price = data.get('price', service.price)
+    service.status = data.get('status', service.status)
+
+    db.session.commit()
+    return jsonify(service.to_dict()), 200
+
+@admin_routes.route('/services/<int:service_id>', methods=['DELETE'])
+def delete_service(service_id):
+    service = Service.query.get(service_id)
+    if not service:
+        return jsonify({"error": "Service not found"}), 404
+
+    db.session.delete(service)
+    db.session.commit()
+    return jsonify({"message": "Service deleted"}), 200

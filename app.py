@@ -17,7 +17,9 @@ def home():
     return {"message": "Servana API running"}
 
 if __name__ == '__main__':
-    from models import Worker  # import AFTER db is initialized
+    from models import Worker
+    from models import Service
+  # import AFTER db is initialized
     with app.app_context():
         db.create_all()
     app.run(debug=True)
