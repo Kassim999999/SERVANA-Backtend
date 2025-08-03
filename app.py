@@ -19,6 +19,8 @@ def home():
 if __name__ == '__main__':
     from models import Worker
     from models import Service
+    from models import Booking
+
   # import AFTER db is initialized
     with app.app_context():
         db.create_all()
