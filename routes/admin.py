@@ -148,22 +148,23 @@ def delete_booking(booking_id):
 
 
 # GET all users
-@admin_routes.route('/api/users', methods=['GET'])
+@admin_routes.route('/users', methods=['GET'])
 def get_users():
     users = User.query.all()
     return jsonify([u.to_dict() for u in users]), 200
 
 # POST new user
-@admin_routes.route('/api/users', methods=['POST'])
+@admin_routes.route('/users', methods=['POST'])
 def create_user():
     data = request.json
-    new_user = User(name=data['name'], email=data['email'], role=data.get('role', 'User'))
+    new_user = User(name=data['name'], email=data['email'], username=data['username'], role=data.get('role', 'User'))
+    new_user.set_password(data['password'])
     db.session.add(new_user)
     db.session.commit()
     return jsonify(new_user.to_dict()), 201
 
 # DELETE user
-@admin_routes.route('/api/users/<int:id>', methods=['DELETE'])
+@admin_routes.route('/users/<int:id>', methods=['DELETE'])
 def delete_user(id):
     user = User.query.get(id)
     if not user:
@@ -171,3 +172,16 @@ def delete_user(id):
     db.session.delete(user)
     db.session.commit()
     return jsonify({"message": "User deleted"}), 200
+
+@admin_routes.route('/users/<int:id>', methods=['PUT'])
+def update_user(id):
+    user = User.query.get(id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    data = request.json
+    user.name = data['name']
+    user.email = data['email']
+    user.role = data['role']
+    db.session.commit()
+    return jsonify(user.to_dict()), 200
