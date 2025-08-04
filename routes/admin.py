@@ -3,6 +3,7 @@ from models import Worker
 from extensions import db
 from models import Service
 from models import Booking
+from models import User
 
 admin_routes = Blueprint('admin', __name__, url_prefix='/api')
 
@@ -144,3 +145,29 @@ def delete_booking(booking_id):
     db.session.delete(booking)
     db.session.commit()
     return jsonify({"message": "Booking deleted"}), 200
+
+
+# GET all users
+@admin_routes.route('/api/users', methods=['GET'])
+def get_users():
+    users = User.query.all()
+    return jsonify([u.to_dict() for u in users]), 200
+
+# POST new user
+@admin_routes.route('/api/users', methods=['POST'])
+def create_user():
+    data = request.json
+    new_user = User(name=data['name'], email=data['email'], role=data.get('role', 'User'))
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify(new_user.to_dict()), 201
+
+# DELETE user
+@admin_routes.route('/api/users/<int:id>', methods=['DELETE'])
+def delete_user(id):
+    user = User.query.get(id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({"message": "User deleted"}), 200
