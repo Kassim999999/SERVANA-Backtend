@@ -4,6 +4,7 @@ from flask_jwt_extended import JWTManager
 
 
 from extensions import db
+from extensions import jwt
 from routes.admin import admin_routes
 from routes.auth import auth_routes
 
@@ -17,7 +18,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///servana.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['JWT_SECRET_KEY'] = 'super-secret-key'
+app.config['JWT_SECRET_KEY'] = 'your-secret-key'
 jwt = JWTManager(app)
+jwt.init_app(app)
 
 db.init_app(app)
 
