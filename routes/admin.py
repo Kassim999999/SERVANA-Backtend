@@ -4,6 +4,8 @@ from extensions import db
 from models import Service
 from models import Booking
 from models import User
+from flask_jwt_extended import jwt_required
+
 
 admin_routes = Blueprint('admin', __name__, url_prefix='/api')
 
@@ -185,3 +187,19 @@ def update_user(id):
     user.role = data['role']
     db.session.commit()
     return jsonify(user.to_dict()), 200
+
+
+@admin_routes.route('/dashboard-stats', methods=['GET'])
+@jwt_required()
+def get_dashboard_stats():
+    users_count = User.query.count()
+    workers_count = Worker.query.count()
+    bookings_count = Booking.query.count()
+    services_count = Service.query.count()
+
+    return jsonify({
+        "users": users_count,
+        "workers": workers_count,
+        "bookings": bookings_count,
+        "services": services_count
+    }), 200
