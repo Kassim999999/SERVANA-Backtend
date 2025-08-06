@@ -203,3 +203,17 @@ def get_dashboard_stats():
         "bookings": bookings_count,
         "services": services_count
     }), 200
+
+
+@admin_routes.route('/sales-data', methods=['GET'])
+def get_sales_data():
+    # You can replace this with actual DB query data if you track sales per month
+    dummy_sales = [
+        {"month": "Jan", "sales": 12000},
+        {"month": "Feb", "sales": 15000},
+        {"month": "Mar", "sales": 10000},
+        {"month": "Apr", "sales": 18000},
+        {"month": "May", "sales": 20000},
+        {"month": "Jun", "sales": 17000}
+    ]
+    return jsonify(dummy_sales), 200
