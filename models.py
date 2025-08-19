@@ -37,6 +37,7 @@ class Service(db.Model):
 
 
 from datetime import datetime
+from sqlalchemy import Numeric
 from extensions import db
 
 class Booking(db.Model):
@@ -47,6 +48,10 @@ class Booking(db.Model):
     scheduled_date = db.Column(db.String(50), nullable=False)
     status = db.Column(db.String(50), default='Pending')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    amount = db.Column(db.Numeric(10, 2), nullable=True)
+    worker_id = db.Column(db.Integer, db.ForeignKey('worker.id', name="fk_booking_worker_id"), nullable=True)
+
+
 
     def to_dict(self):
         return {
@@ -56,7 +61,8 @@ class Booking(db.Model):
             "service_name": self.service_name,
             "scheduled_date": self.scheduled_date,
             "status": self.status,
-            "created_at": self.created_at.isoformat()
+            "created_at": self.created_at.isoformat(),
+            "amount": float(self.amount) if self.amount is not None else 0
         }
 
 
